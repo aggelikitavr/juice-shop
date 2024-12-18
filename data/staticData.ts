@@ -3,8 +3,25 @@ import { readFile } from 'fs/promises'
 import { safeLoad } from 'js-yaml'
 import logger from '../lib/logger'
 
-export async function loadStaticData (file: string) {
-  const filePath = path.resolve(path.join('./data/static', file + '.yml'))
+function sanitizeFileName(file: string): string {
+  const sanitizedFile = file.replace(/\.\.(\/|\\)/g, ''); 
+  return sanitizedFile;
+}
+
+function isSafeFilePath(filePath: string): boolean {
+  const resolvedPath = path.resolve(filePath);
+  return resolvedPath.startsWith(path.resolve('./data/static'));
+}
+
+export async function loadStaticData(file: string) {
+  const sanitizedFile = sanitizeFileName(file);
+  const filePath = path.resolve(path.join('./data/static', sanitizedFile + '.yml'));
+
+  if (!isSafeFilePath(filePath)) {
+    logger.error('Invalid file path: "' + filePath + '"');
+    throw new Error('Attempt to access a file outside the allowed directory');
+  }
+
   return await readFile(filePath, 'utf8')
     .then(safeLoad)
     .catch(() => logger.error('Could not open file: "' + filePath + '"'))
@@ -28,14 +45,17 @@ export interface StaticUser {
   address?: StaticUserAddress[]
   card?: StaticUserCard[]
 }
+
 export interface StaticUserSecurityQuestion {
   id: number
   answer: string
 }
+
 export interface StaticUserFeedback {
   comment: string
   rating: 1 | 2 | 3 | 4 | 5
 }
+
 export interface StaticUserAddress {
   fullName: string
   mobileNum: number
@@ -45,12 +65,14 @@ export interface StaticUserAddress {
   state: string
   country: string
 }
+
 export interface StaticUserCard {
   fullName: string
   cardNum: number
   expMonth: number
   expYear: number
 }
+
 export async function loadStaticUserData (): Promise<StaticUser[]> {
   return await loadStaticData('users') as StaticUser[]
 }
@@ -70,6 +92,7 @@ export interface StaticChallenge {
     order: number
   }
 }
+
 export async function loadStaticChallengeData (): Promise<StaticChallenge[]> {
   return await loadStaticData('challenges') as StaticChallenge[]
 }
@@ -81,6 +104,7 @@ export interface StaticDelivery {
   eta: number
   icon: string
 }
+
 export async function loadStaticDeliveryData (): Promise<StaticDelivery[]> {
   return await loadStaticData('deliveries') as StaticDelivery[]
 }
@@ -88,6 +112,7 @@ export async function loadStaticDeliveryData (): Promise<StaticDelivery[]> {
 export interface StaticSecurityQuestions {
   question: string
 }
+
 export async function loadStaticSecurityQuestionsData (): Promise<StaticSecurityQuestions[]> {
   return await loadStaticData('securityQuestions') as StaticSecurityQuestions[]
 }
