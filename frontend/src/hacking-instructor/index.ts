@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-import snarkdown from 'snarkdown'
-
 import { LoginAdminInstruction } from './challenges/loginAdmin'
 import { DomXssInstruction } from './challenges/domXss'
 import { ScoreBoardInstruction } from './challenges/scoreBoard'
