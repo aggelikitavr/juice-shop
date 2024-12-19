@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import snarkdown from 'snarkdown'
+//import snarkdown from 'snarkdown'
 
 import { LoginAdminInstruction } from './challenges/loginAdmin'
 import { DomXssInstruction } from './challenges/domXss'
@@ -136,8 +136,8 @@ function loadHint (hint: ChallengeHint): HTMLElement {
   wrapper.appendChild(relAnchor)
 
   if (hint.fixtureAfter) {
-    // insertAfter does not exist so we simulate it this way
-    target.parentElement.insertBefore(wrapper, target.nextSibling)
+      //insertAfter does not exist so we simulate it this way
+   target.parentElement.insertBefore(wrapper, target.nextSibling)
   } else {
     target.parentElement.insertBefore(wrapper, target)
   }
